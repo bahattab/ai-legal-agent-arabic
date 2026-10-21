@@ -15,7 +15,7 @@ curl -X POST http://localhost:5000/api/chat \
   "stages": {"A": {…}, "B": {"hypotheses": […], "passed_count": 2, "total_count": 3}, "D": {…}}
 }
 ```
-مخطط `stages` الكامل في `skills/hakam-legal-analysis/references/output-formats.md`.
+مخطط `stages` الكامل في `skills/0 - arabic-hakam-legal-analysis/references/output-formats.md`، ومثال جاهز في `examples/sample_response.json`.
 
 **الأخطاء:** `400` إن كان السؤال فارغاً · `500` مع `{"error": "حدث خطأ أثناء المعالجة: …"}` عند فشل المزود.
 

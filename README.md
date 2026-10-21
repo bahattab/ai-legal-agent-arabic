@@ -6,6 +6,12 @@
 
 **منظومة ذكاء اصطناعي قانوني متعددة الوكلاء (Multi-Agent) بالعربية، للتحليل الجنائي للنصوص، والتنقيب عن النوايا، والتقاضي الصوري قبل إصدار الرأي.**
 
+> **تعريف المستودع:** "حَكَم" محكمة صورية رقمية مفتوحة المصدر تجيب عن الأسئلة القانونية بالعربية. لا تكتفي بإجابة واحدة، بل تفكّك الوقائع، وتبني ثلاث فرضيات مستقلة (حرفية، مقاصدية، إجرائية)، ثم يهاجمها "ادعاء عام" آلي ويمنح كل منها درجة، ولا يدخل في الرأي النهائي إلا ما اجتاز حد القبول. يأتي المشروع في صورتين: **تطبيق ويب** (Flask + OpenAI) بواجهة عربية وأرشيف للقضايا، و**مهارة AHLA** تنقل البروتوكول نفسه إلى Claude أو ChatGPT أو أي وكيل ذكاء اصطناعي.
+>
+> *Hakam is an open-source Arabic legal-reasoning engine: a multi-agent "moot court" that deconstructs facts, generates literal, purposive and procedural hypotheses, scores them with an adversarial verifier, and synthesizes a balanced opinion. Ships as a Flask web app and as the agent-agnostic AHLA skill.*
+
+**لمن هذا المشروع؟** الباحثون القانونيون، والمحامون الذين يريدون مسودة تحليل أولية منظمة، ومطورو تطبيقات الذكاء الاصطناعي القانوني بالعربية، والأفراد الذين يريدون فهم موقفهم قبل استشارة محامٍ.
+
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue) ![Flask](https://img.shields.io/badge/Flask-3.x-black) ![License](https://img.shields.io/badge/License-MIT-green) ![RTL](https://img.shields.io/badge/UI-Arabic%20RTL-c9a24b)
 
 ---
@@ -15,6 +21,7 @@
 - [كيف يعمل](#-كيف-يعمل-hakam-kernel-v60)
 - [المميزات](#-المميزات)
 - [التثبيت والتشغيل](#️-التثبيت-والتشغيل)
+- [طريقة الاستخدام والأمثلة](#-طريقة-الاستخدام)
 - [الإعدادات](#️-الإعدادات)
 - [واجهة البرمجة (API)](#-واجهة-البرمجة-api)
 - [هيكلية المشروع](#️-هيكلية-المشروع)
@@ -86,6 +93,32 @@ python app.py
 ```
 ثم افتح `http://localhost:5000`.
 
+## 📘 طريقة الاستخدام
+
+| الطريقة | ابدأ هكذا |
+|---|---|
+| **تطبيق الويب** | `python app.py` ثم افتح `http://localhost:5000`، اكتب الوقائع والسؤال، واضغط **عرض على المحكمة**. افتح "مراحل التفكير" لترى الفرضيات ودرجاتها. |
+| **واجهة البرمجة** | `python examples/api_client.py --stages "سؤالك"` |
+| **مهارة AHLA في أي وكيل** | `AHLA: سؤالك` · `AHLA full: سؤالك` (مع المراحل) · `AHLA json: سؤالك` (مخرج آلي) |
+
+### مثال سريع
+```text
+AHLA full: في عقد عملي غير محدد المدة بند يمنعني من أي عمل لدى الغير حتى بدون أجر،
+وتعويضي عن الفصل غير المشروع راتب شهر بينما تعويض الشركة ثلاثة أشهر. هل البندان صحيحان؟ (السعودية)
+```
+| المسار | الدرجة | القرار |
+|---|---|---|
+| الحرفي | 0.55 | مرفوضة — "لا نص يحظره ← صحيح مطلقاً" قفز منطقي |
+| المقاصدي | 0.80 | مقبولة |
+| الإجرائي | 0.65 | مرفوضة (تحتاج مراجعة) |
+
+> على الرغم من أن لصاحب العمل أن يشترط التفرغ ويمنع تعارض المصالح أثناء العقد، إلا أن الصياغة المطلقة التي تحظر حتى المشورة غير المنافسة تُوزن بميزان المصلحة المشروعة والتناسب…
+
+*(مقتطف توضيحي لشكل المخرج، وليس رأياً قانونياً معتمداً.)*
+
+📖 **الدليل الكامل:** [`docs/USAGE.md`](docs/USAGE.md) — خطوات الواجهة، أمثلة curl وPowerShell وPython، تثبيت المهارة لكل وكيل، أربعة أمثلة مشروحة، واستكشاف الأخطاء.
+🧪 **أمثلة جاهزة:** [`examples/`](examples/) — [`api_client.py`](examples/api_client.py)، [`sample_questions.md`](examples/sample_questions.md)، [`sample_response.json`](examples/sample_response.json).
+
 ## ⚙️ الإعدادات
 
 كل الإعدادات في `.env` (انظر [`.env.example`](.env.example)):
@@ -133,7 +166,8 @@ ai-legal-agent-arabic/
 │   └── orchestrator.py         # المايسترو: A → B → D
 ├── templates/index.html        # الواجهة
 ├── static/{css,js}/            # التنسيق ومنطق الواجهة
-├── skills/hakam-legal-analysis # مهارة الوكلاء المستقلة
+├── skills/0 - arabic-hakam-legal-analysis  # مهارة AHLA لأي وكيل
+├── examples/                   # عميل API، أسئلة تجريبية، نموذج رد
 ├── docs/                       # التوثيق التقني
 ├── tests/                      # اختبارات بلا استدعاء نماذج حقيقية
 ├── data/                       # قاعدة البيانات المحلية (مستبعدة من git)
@@ -141,15 +175,17 @@ ai-legal-agent-arabic/
 └── requirements.txt
 ```
 
-## 🧩 مهارة الوكلاء (Agent Skill)
+## 🧩 مهارة الوكلاء (AHLA)
 
-المجلد [`skills/hakam-legal-analysis`](skills/hakam-legal-analysis/SKILL.md) يحوّل البروتوكول إلى مهارة بصيغة `SKILL.md` القياسية، تعمل في Claude (Claude Code / التطبيق) وأي وكيل يدعم مجلدات المهارات.
+المجلد [`skills/0 - arabic-hakam-legal-analysis`](skills/0%20-%20arabic-hakam-legal-analysis/SKILL.md) ينقل البروتوكول إلى أي وكيل ذكاء اصطناعي، ويُشغَّل بكلمة **`AHLA`** (Arabic Hakam Legal Analysis).
 
-```bash
-# Claude Code — على مستوى المستخدم
-cp -r skills/hakam-legal-analysis ~/.claude/skills/
-```
-ثم اطلب: «حلّل هذه المسألة بطريقة حَكَم: …».
+- **وكلاء يدعمون المهارات** (Claude Code، Claude، Codex، Gemini CLI، OpenCode، Cursor…): انسخ المجلد إلى مجلد المهارات.
+  ```bash
+  cp -r "skills/0 - arabic-hakam-legal-analysis" ~/.claude/skills/
+  ```
+- **وكلاء بلا مهارات** (ChatGPT، Custom GPT، API): الصق [`AGENTS.md`](skills/0%20-%20arabic-hakam-legal-analysis/AGENTS.md) في التعليمات النظامية.
+
+التفاصيل والفروق بين المهارة والتطبيق في [`docs/USAGE.md`](docs/USAGE.md#3-مهارة-ahla-لأي-وكيل-ذكاء-اصطناعي).
 
 ## 🧪 الاختبارات
 

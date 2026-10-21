@@ -1,17 +1,21 @@
 ---
-name: hakam-legal-analysis
-description: Arabic multi-path legal analysis using the Hakam Kernel v6.0 protocol — forensic fact deconstruction, governing-law lock, three parallel hypotheses (literal, purposive, procedural), an internal moot court that scores and rejects weak hypotheses, then a balanced sovereign opinion. Use when the user asks an Arabic legal question, wants a legal opinion on a contract clause, dispute, employment, IP or commercial matter, or asks to run "حَكَم" / "Hakam".
+name: 0-arabic-hakam-legal-analysis
+description: Arabic multi-path legal analysis (Hakam Kernel v6.0) — forensic fact deconstruction, governing-law lock, three independent hypotheses (literal, purposive, procedural), an internal moot court that scores and rejects weak ones, then a balanced legal opinion in formal Arabic. Trigger on AHLA, or on "حَكَم" / Hakam / 0 - arabic-hakam-legal-analysis, or when the user asks an Arabic legal question or wants a legal opinion on a contract clause, dispute, employment, IP or commercial matter. Agent-agnostic; works in any agent that can read Markdown.
 ---
 
-# حَكَم — التحليل القانوني متعدد المسارات
+
+# AHLA — حَكَم: التحليل القانوني العربي متعدد المسارات
+
+**أمر التشغيل:** `AHLA` (Arabic Hakam Legal Analysis). مثال: `AHLA: هل يصح بند يمنع الموظف من أي عمل للغير؟`
+أضف `AHLA full` لعرض مراحل التفكير كاملة، و`AHLA json` للمخرج الآلي.
 
 مهارة مستخرجة من مستودع [ai-legal-agent-arabic](https://github.com/bahattab/ai-legal-agent-arabic).
-تنفّذ بروتوكول **Hakam Kernel v6.0** داخل أي وكيل (Claude أو غيره) دون الحاجة لتشغيل تطبيق Flask.
+تنفّذ بروتوكول **Hakam Kernel v6.0** داخل أي وكيل ذكاء اصطناعي دون الحاجة لتشغيل تطبيق Flask.
 
 ## متى تُستخدم
 - سؤال قانوني بالعربية يحتاج رأياً مدروساً لا إجابة سريعة.
 - تقييم مشروعية بند تعاقدي، أو موقف في نزاع عمل/تجاري/ملكية فكرية.
-- طلب صريح: "حلّلها بطريقة حَكَم" أو "اعرضها على المحكمة الصورية".
+- كلمة التشغيل `AHLA`، أو طلب صريح: "حلّلها بطريقة حَكَم" / "اعرضها على المحكمة الصورية".
 
 لا تُستخدم للأسئلة التعريفية البسيطة ("ما معنى التقادم؟") — أجب مباشرة.
 
@@ -60,10 +64,16 @@ description: Arabic multi-path legal analysis using the Hakam Kernel v6.0 protoc
 - **عند الطلب** ("أرني مراحل التفكير"): المراحل A ثم B (جدول: المسار، الدرجة، مقبولة/مرفوضة، أبرز الثغرات) ثم D.
 - عند الحاجة لمخرج آلي (JSON) اتبع المخطط في `references/output-formats.md` — وهو مطابق لما يحفظه التطبيق في قاعدة البيانات.
 
-## الاستخدام مع وكلاء فرعيين (اختياري)
+## الاستخدام مع أي وكيل
+- **وكلاء يدعمون مجلدات المهارات** (Claude Code، Codex، Gemini CLI، OpenCode، Kilo Code، Cursor وغيرها): انسخ هذا المجلد إلى مجلد المهارات لدى الوكيل؛ يكفي `SKILL.md` ومجلد `references/`.
+- **وكلاء بلا نظام مهارات** (ChatGPT، Custom GPTs، واجهات API): الصق محتوى `AGENTS.md` في التعليمات النظامية أو ملف التعليمات المخصصة.
+- لا تعتمد المهارة على أداة أو MCP بعينه. البحث على الويب اختياري ويُستخدم فقط للتحقق من النصوص النظامية.
+
+### وكلاء فرعيون (اختياري)
 إن كانت بيئتك تدعم وكلاء متوازيين: وكيل لكل فرضية في B1، ووكيل مستقل للادعاء في B2 لم يرَ كيف بُنيت الفرضيات. هذا يطابق معمارية التطبيق الأصلية. وإلا نفّذ المراحل تسلسلياً في سياق واحد.
 
 ## المراجع
 - `references/output-formats.md` — قوالب كل مرحلة ومخطط JSON.
 - `references/moot-court-rubric.md` — معايير التقييم وأمثلة الثغرات.
 - `references/worked-example.md` — مثال مختصر كامل (بند منع العمل لدى الغير).
+- `AGENTS.md` — نسخة مكثفة قائمة بذاتها للوكلاء الذين لا يدعمون المهارات.
