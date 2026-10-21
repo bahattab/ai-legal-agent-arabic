@@ -10,6 +10,8 @@
 >
 > *Hakam is an open-source Arabic legal-reasoning engine: a multi-agent "moot court" that deconstructs facts, generates literal, purposive and procedural hypotheses, scores them with an adversarial verifier, and synthesizes a balanced opinion. Ships as a Flask web app and as the agent-agnostic AHLA skill.*
 
+> **المصدر والإسناد:** هذا المستودع تفرّع (fork) من مشروع [Pythonation/ai-legal-agent-arabic](https://github.com/Pythonation/ai-legal-agent-arabic) لمجتمع بايثون العربي (Python Arabic Community)، صاحب فكرة "حَكَم" وبروتوكول Hakam Kernel. المستودع الأصلي لم يتضمن وحدات `agents/` و`pipeline/` والواجهة، فأُعيد بناؤها هنا، وأضيفت مهارة AHLA والتوثيق والأمثلة.
+
 **لمن هذا المشروع؟** الباحثون القانونيون، والمحامون الذين يريدون مسودة تحليل أولية منظمة، ومطورو تطبيقات الذكاء الاصطناعي القانوني بالعربية، والأفراد الذين يريدون فهم موقفهم قبل استشارة محامٍ.
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue) ![Flask](https://img.shields.io/badge/Flask-3.x-black) ![License](https://img.shields.io/badge/License-MIT-green) ![RTL](https://img.shields.io/badge/UI-Arabic%20RTL-c9a24b)

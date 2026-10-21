@@ -5,6 +5,7 @@
 - `docs/USAGE.md`: دليل استخدام كامل للطرق الثلاث مع أمثلة مشروحة واستكشاف الأخطاء.
 - `examples/`: عميل API (`api_client.py`)، أسئلة تجريبية، نموذج رد JSON.
 - تعريف المستودع وقسم "طريقة الاستخدام" في README.
+- إسناد المشروع الأصلي (Pythonation / Python Arabic Community) في README وLICENSE.
 ### تغيّر
 - المهارة أعيدت تسميتها إلى `skills/0 - arabic-hakam-legal-analysis` وتُشغَّل بـ `AHLA`، مع `AGENTS.md` للوكلاء الذين لا يدعمون المهارات.
 
