@@ -35,7 +35,19 @@ async function loadArchive() {
   $("archive").innerHTML = "";
   for (const c of items) {
     const li = document.createElement("li");
-    li.textContent = c.title || c.first_message || `قضية ${c.id}`;
+    const label = document.createElement("span");
+    label.textContent = c.title || c.first_message || `قضية ${c.id}`;
+    const del = document.createElement("button");
+    del.className = "del"; del.title = "حذف القضية"; del.textContent = "✕";
+    del.onclick = async (ev) => {
+      ev.stopPropagation();
+      if (!confirm("حذف هذه القضية نهائياً؟")) return;
+      let token = ""; try { token = sessionStorage.getItem("hakamAdmin") || ""; } catch {}
+      const r = await fetch(`/api/conversations/${c.id}`, { method: "DELETE", headers: { "X-Admin-Token": token } });
+      if (!r.ok) { alert("الحذف متاح في نسخة سطح المكتب أو للمسؤول فقط"); return; }
+      if (conversationId === c.id) $("newCase").click(); else loadArchive();
+    };
+    li.append(label, del);
     li.className = c.id === conversationId ? "active" : "";
     li.onclick = () => openConversation(c.id);
     $("archive").appendChild(li);

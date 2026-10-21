@@ -1,0 +1,12 @@
+services:
+  hakam:
+    build: .
+    image: hakam:1.0.0
+    ports:
+      - "8000:8000"
+    env_file: .env
+    volumes:
+      - hakam-data:/data
+    restart: unless-stopped
+volumes:
+  hakam-data:

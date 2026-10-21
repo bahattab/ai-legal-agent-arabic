@@ -4,8 +4,6 @@ import json
 import os
 import sys
 
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-os.environ.setdefault("OPENAI_API_KEY", "test")
 
 import agents.base as base  # noqa: E402
 from pipeline import LegalPipeline  # noqa: E402

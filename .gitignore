@@ -16,3 +16,10 @@ data/*.db
 Thumbs.db
 .vscode/
 .idea/
+
+# بناء سطح المكتب
+dist/
+build/
+.venv-build/
+desktop/version_info.txt
+*.spec.bak

@@ -1,0 +1,117 @@
+name: Build & Release
+
+on:
+  push:
+    tags: ["v*"]
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements.txt -r requirements-dev.txt
+      - run: python -m pytest -q
+      - id: v
+        name: Read version
+        run: echo "version=$(python -c 'import version;print(version.__version__)')" >> "$GITHUB_OUTPUT"
+      - name: Tag must match version.py
+        if: startsWith(github.ref, 'refs/tags/')
+        run: test "${GITHUB_REF_NAME}" = "v${{ steps.v.outputs.version }}"
+
+  web:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker image and check /health
+        run: |
+          docker build -t hakam:${{ needs.test.outputs.version }} .
+          docker run -d --name hakam -p 8000:8000 -e OPENAI_API_KEY=dummy hakam:${{ needs.test.outputs.version }}
+          for i in $(seq 1 30); do curl -fsS localhost:8000/health && break; sleep 1; done
+          curl -fsS localhost:8000/health | grep '"version":"${{ needs.test.outputs.version }}"'
+          curl -fsS -o /dev/null localhost:8000/settings
+          docker logs hakam
+      - name: Package web release
+        run: |
+          V=${{ needs.test.outputs.version }}
+          git archive --format=zip --prefix=hakam-web-$V/ -o hakam-web-$V.zip HEAD \
+            -- . ':(exclude).github' ':(exclude)desktop' ':(exclude)desktop.py' ':(exclude)requirements-desktop.txt' ':(exclude)data/*.db'
+          unzip -l hakam-web-$V.zip | tail -1
+      - uses: actions/upload-artifact@v4
+        with: { name: web, path: "hakam-web-*.zip" }
+
+  windows:
+    needs: test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install -r requirements-desktop.txt
+      - run: python desktop/make_version_info.py
+      - run: pyinstaller desktop/hakam.spec --noconfirm --clean --distpath dist --workpath build
+      - name: Smoke test (folder build)
+        run: |
+          $p = Start-Process dist\Hakam\Hakam.exe -ArgumentList "--smoke-test" -Wait -PassThru
+          if ($p.ExitCode -ne 0) { Get-Content "$env:APPDATA\Hakam\hakam.log" -ErrorAction SilentlyContinue; throw "folder build smoke test failed ($($p.ExitCode))" }
+      - name: Smoke test (portable)
+        run: |
+          $exe = Get-ChildItem dist\Hakam-*-portable.exe | Select-Object -First 1
+          $p = Start-Process $exe.FullName -ArgumentList "--smoke-test" -Wait -PassThru
+          if ($p.ExitCode -ne 0) { Get-Content "$env:APPDATA\Hakam\hakam.log" -ErrorAction SilentlyContinue; throw "portable smoke test failed ($($p.ExitCode))" }
+      - name: Build installer (Inno Setup)
+        run: |
+          $iscc = @("${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe", "$env:ProgramFiles\Inno Setup 6\ISCC.exe") | Where-Object { Test-Path $_ } | Select-Object -First 1
+          if (-not $iscc) { choco install innosetup -y --no-progress; $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe" }
+          & $iscc "/DAppVersion=${{ needs.test.outputs.version }}" desktop\installer.iss
+          if ($LASTEXITCODE -ne 0) { throw "iscc failed" }
+      - name: Silent install test
+        run: |
+          $setup = Get-ChildItem dist\Hakam-Setup-*.exe | Select-Object -First 1
+          Start-Process $setup.FullName -ArgumentList "/VERYSILENT","/SUPPRESSMSGBOXES","/CURRENTUSER","/DIR=$env:RUNNER_TEMP\HakamTest" -Wait
+          $p = Start-Process "$env:RUNNER_TEMP\HakamTest\Hakam.exe" -ArgumentList "--smoke-test" -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw "installed app smoke test failed ($($p.ExitCode))" }
+          Get-Content "$env:APPDATA\Hakam\hakam.log" -Tail 5
+      - name: Checksums
+        run: |
+          $lines = Get-ChildItem dist\*.exe | ForEach-Object { "$((Get-FileHash $_ -Algorithm SHA256).Hash.ToLower())  $($_.Name)" }
+          [IO.File]::WriteAllText("dist\SHA256SUMS-windows.txt", (($lines -join "`n") + "`n"))
+      - uses: actions/upload-artifact@v4
+        with:
+          name: windows
+          path: |
+            dist/Hakam-Setup-*.exe
+            dist/Hakam-*-portable.exe
+            dist/SHA256SUMS-windows.txt
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [test, web, windows]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { path: artifacts, merge-multiple: true }
+      - name: Release notes from CHANGELOG
+        run: |
+          V=${{ needs.test.outputs.version }}
+          awk -v v="$V" '$0 ~ "^## \\[" v "\\]" {f=1; next} /^## \[/ {if (f) exit} f' CHANGELOG.md > notes.md
+          cd artifacts && sha256sum hakam-web-*.zip >> SHA256SUMS-windows.txt && mv SHA256SUMS-windows.txt SHA256SUMS.txt && cd ..
+          ls -la artifacts; cat notes.md
+      - uses: softprops/action-gh-release@v2
+        with:
+          name: حَكَم ${{ github.ref_name }}
+          body_path: notes.md
+          files: artifacts/*

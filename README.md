@@ -14,7 +14,19 @@
 
 **لمن هذا المشروع؟** الباحثون القانونيون، والمحامون الذين يريدون مسودة تحليل أولية منظمة، ومطورو تطبيقات الذكاء الاصطناعي القانوني بالعربية، والأفراد الذين يريدون فهم موقفهم قبل استشارة محامٍ.
 
-![Python](https://img.shields.io/badge/Python-3.10%2B-blue) ![Flask](https://img.shields.io/badge/Flask-3.x-black) ![License](https://img.shields.io/badge/License-MIT-green) ![RTL](https://img.shields.io/badge/UI-Arabic%20RTL-c9a24b)
+![Version](https://img.shields.io/badge/version-1.0.0-c9a24b) ![Windows](https://img.shields.io/badge/Desktop-Windows%2010%2F11-0078D4) ![Web](https://img.shields.io/badge/Web-Docker%20%7C%20cPanel%20%7C%20PaaS-2ea44f) ![Python](https://img.shields.io/badge/Python-3.10%2B-blue) ![Flask](https://img.shields.io/badge/Flask-3.x-black) ![License](https://img.shields.io/badge/License-MIT-green) ![RTL](https://img.shields.io/badge/UI-Arabic%20RTL-c9a24b)
+
+---
+
+## ⬇️ التنزيل — الإصدار 1.0.0
+
+| النسخة | الملف | التشغيل |
+|---|---|---|
+| 🖥️ **سطح المكتب — مثبّت** | `Hakam-Setup-1.0.0.exe` | ثبّت ثم افتح حَكَم من قائمة ابدأ ([الدليل](docs/DESKTOP.md)) |
+| 💼 **سطح المكتب — محمولة** | `Hakam-1.0.0-portable.exe` | شغّل مباشرة بلا تثبيت |
+| 🌐 **الويب — أي استضافة** | `hakam-web-1.0.0.zip` | Docker، Render، Heroku، cPanel، VPS… ([الدليل](docs/DEPLOYMENT.md)) |
+
+**[← صفحة الإصدارات](https://github.com/bahattab/ai-legal-agent-arabic/releases/latest)** · كل النسخ تدعم **أي مزود ذكاء اصطناعي** من صفحة الإعدادات ([الدليل](docs/PROVIDERS.md)).
 
 ---
 
@@ -23,6 +35,7 @@
 - [كيف يعمل](#-كيف-يعمل-hakam-kernel-v60)
 - [المميزات](#-المميزات)
 - [التثبيت والتشغيل](#️-التثبيت-والتشغيل)
+- [مزودو الذكاء الاصطناعي](#-مزودو-الذكاء-الاصطناعي)
 - [طريقة الاستخدام والأمثلة](#-طريقة-الاستخدام)
 - [الإعدادات](#️-الإعدادات)
 - [واجهة البرمجة (API)](#-واجهة-البرمجة-api)
@@ -70,30 +83,44 @@ flowchart TB
 - **بوابة تحقق قابلة للضبط** (`HAKAM_VERIFICATION_THRESHOLD`، الافتراضي 0.7) مع مسار احتياطي آمن عند رفض كل الفرضيات.
 - **واجهة عربية RTL** داكنة/ذهبية بخط Tajawal، متجاوبة مع الجوال، تعرض مراحل التفكير ودرجات الفرضيات.
 - **أرشيف قضايا محلي** في SQLite مع حفظ كامل مراحل المعالجة لكل رد.
-- **مزود قابل للتبديل**: أي بوابة متوافقة مع OpenAI (مثل OpenRouter) عبر `OPENAI_BASE_URL`، وأي نموذج لكل وكيل عبر متغيرات البيئة.
+- **أي مزود ذكاء اصطناعي**: OpenAI، Claude، Gemini، OpenRouter، DeepSeek، Groq، Mistral، xAI، Together، Ollama، LM Studio، أو أي خادم متوافق مع OpenAI — ونموذج مستقل لكل وكيل، من صفحة إعدادات مرئية.
+- **ثلاث صور للتشغيل**: مثبّت Windows، ملف EXE محمول، وحزمة ويب جاهزة لـ Docker وcPanel ومنصات PaaS.
 - **مهارة وكلاء مستقلة** تنفّذ البروتوكول نفسه داخل Claude أو أي وكيل آخر دون تشغيل التطبيق.
 
 ## 🛠️ التثبيت والتشغيل
 
-**المتطلبات:** Python 3.10+ ومفتاح API لمزود متوافق مع OpenAI.
+### 1. سطح المكتب (Windows)
+نزّل `Hakam-Setup-1.0.0.exe` من [الإصدارات](https://github.com/bahattab/ai-legal-agent-arabic/releases/latest) وثبّته، ثم افتح **⚙ مزودو الذكاء الاصطناعي** وأضف مفتاحك. التفاصيل في [`docs/DESKTOP.md`](docs/DESKTOP.md).
 
+### 2. الويب على استضافة
+```bash
+cp .env.example .env              # OPENAI_API_KEY + HAKAM_ADMIN_TOKEN
+docker compose up -d --build      # ثم افتح http://الخادم:8000
+```
+بدائل Render وHeroku وcPanel وPythonAnywhere وsystemd في [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
+
+### 3. من المصدر (للتطوير)
+**المتطلبات:** Python 3.10+.
 ```bash
 git clone https://github.com/bahattab/ai-legal-agent-arabic.git
 cd ai-legal-agent-arabic
-
 python -m venv venv
-# Windows
-.\venv\Scripts\activate
-# macOS / Linux
-source venv/bin/activate
-
+# Windows: .\venv\Scripts\activate   |   macOS/Linux: source venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env        # Windows: copy .env.example .env
-# حرّر .env وضع OPENAI_API_KEY
-
-python app.py
+cp .env.example .env              # Windows: copy .env.example .env
+python app.py                     # الويب على http://localhost:5000
+python desktop.py                 # أو نافذة سطح المكتب (pip install pywebview)
 ```
-ثم افتح `http://localhost:5000`.
+
+## 🤖 مزودو الذكاء الاصطناعي
+من **⚙ الإعدادات** (`/settings`) أضف أي عدد من المزودين، واختر لكل وكيل مزوداً ونموذجاً، واختبر الاتصال قبل الحفظ.
+
+| النوع | أمثلة |
+|---|---|
+| متوافق مع OpenAI | OpenAI · OpenRouter · Google Gemini · DeepSeek · Groq · Mistral · xAI · Together · Ollama · LM Studio · خادم مخصص |
+| Anthropic أصلي | Claude |
+
+على الويب تتطلب صفحة الإعدادات `HAKAM_ADMIN_TOKEN`، ويمكن بدلاً منها ضبط كل شيء بـ `HAKAM_SETTINGS_JSON`. الشرح والأمثلة في [`docs/PROVIDERS.md`](docs/PROVIDERS.md).
 
 ## 📘 طريقة الاستخدام
 
@@ -123,20 +150,19 @@ AHLA full: في عقد عملي غير محدد المدة بند يمنعني �
 
 ## ⚙️ الإعدادات
 
-كل الإعدادات في `.env` (انظر [`.env.example`](.env.example)):
+المزودون والنماذج تُدار من صفحة الإعدادات. متغيرات البيئة (في `.env`، انظر [`.env.example`](.env.example)):
 
 | المتغير | الافتراضي | الوصف |
 |---|---|---|
-| `OPENAI_API_KEY` | — (مطلوب) | مفتاح المزود |
-| `OPENAI_BASE_URL` | فارغ | بوابة متوافقة، مثل `https://openrouter.ai/api/v1` |
-| `HAKAM_MODEL_ANALYZER` | `gpt-5.2` | نموذج المرحلة A |
-| `HAKAM_MODEL_HYPOTHESIS` | `o4-mini` | نموذج الفرضيات |
-| `HAKAM_MODEL_VERIFIER` | `gpt-5-mini` | نموذج الادعاء |
-| `HAKAM_MODEL_SYNTHESIZER` | `gpt-5.2` | نموذج الحكم |
-| `HAKAM_VERIFICATION_THRESHOLD` | `0.7` | حد قبول الفرضية |
-| `HAKAM_DATABASE_PATH` | `data/legal_agent.db` | مسار قاعدة البيانات |
-| `HAKAM_API_TIMEOUT` | `120` | مهلة الطلب بالثواني |
-| `FLASK_DEBUG` / `PORT` | `0` / `5000` | وضع التطوير والمنفذ |
+| `OPENAI_API_KEY` / `OPENAI_BASE_URL` | — | المزود الافتراضي إن لم تُحفظ إعدادات من الواجهة |
+| `HAKAM_MODEL_*` | `gpt-5.2`، `o4-mini`، `gpt-5-mini`، `gpt-5.2` | النماذج الافتراضية للوكلاء الأربعة |
+| `HAKAM_SETTINGS_JSON` | — | الإعدادات كاملة كـ JSON (يغلب صفحة الإعدادات) |
+| `HAKAM_ADMIN_TOKEN` | — | يفتح تعديل الإعدادات على الويب |
+| `HAKAM_ACCESS_TOKEN` | — | يحمي الموقع كله بصفحة دخول |
+| `HAKAM_DATA_DIR` | `data/` (ويب) · `%APPDATA%\Hakam` (سطح المكتب) | قاعدة البيانات و`providers.json` |
+| `HAKAM_VERIFICATION_THRESHOLD` | `0.7` | حد قبول الفرضية الافتراضي |
+| `HAKAM_API_TIMEOUT` | `120` | مهلة استدعاء النموذج بالثواني |
+| `HOST` / `PORT` / `FLASK_DEBUG` | `127.0.0.1` / `5000` / `0` | تشغيل `python app.py` |
 
 > ⚠️ لا تفعّل `FLASK_DEBUG=1` على خادم مكشوف للشبكة.
 
@@ -147,6 +173,10 @@ AHLA full: في عقد عملي غير محدد المدة بند يمنعني �
 | `POST` | `/api/chat` | `{"question": "...", "conversation_id": 1?}` ← الرأي + المراحل |
 | `GET` | `/api/conversations` | قائمة القضايا المؤرشفة |
 | `GET` | `/api/conversations/<id>` | رسائل قضية مع `metadata` المراحل |
+| `DELETE` | `/api/conversations/<id>` | حذف قضية (سطح المكتب، أو المسؤول على الويب) |
+| `GET/PUT` | `/api/settings` | قراءة/حفظ المزودين والنماذج (المفاتيح مخفية) |
+| `POST` | `/api/providers/test` · `/api/providers/models` | اختبار مزود · جلب نماذجه |
+| `GET` | `/api/version` · `/health` | رقم الإصدار · فحص الصحة |
 
 أمثلة كاملة ومخطط الاستجابة في [`docs/API.md`](docs/API.md).
 
@@ -155,18 +185,25 @@ AHLA full: في عقد عملي غير محدد المدة بند يمنعني �
 ```
 ai-legal-agent-arabic/
 ├── app.py                      # خادم Flask ونقاط الـ API
-├── config.py                   # الإعدادات (قابلة للتجاوز من .env)
+├── version.py                  # رقم الإصدار (المصدر الوحيد)
+├── config.py                   # المسارات والتشغيل والأمان
+├── settings.py                 # المزودون وتعيين النماذج للوكلاء
+├── desktop.py                  # مشغّل سطح المكتب (نافذة + خادم محلي)
+├── wsgi.py · passenger_wsgi.py # نقاط دخول الاستضافة (gunicorn · cPanel)
+├── Dockerfile · docker-compose.yml · Procfile · render.yaml
 ├── database.py                 # أرشيف SQLite
 ├── agents/                     # عقل النظام
 │   ├── prompts.py              # موجّهات بروتوكول Hakam Kernel v6.0
-│   ├── base.py                 # طبقة الاتصال بالنموذج
+│   ├── base.py                 # المزودون: OpenAI-compatible + Anthropic
 │   ├── analyzer.py             # A: التحليل الجنائي
 │   ├── hypothesis.py           # B1: الفرضيات الثلاث
 │   ├── verifier.py             # B2: المحكمة الصورية
 │   └── synthesizer.py          # D: الحكم النهائي
 ├── pipeline/
 │   └── orchestrator.py         # المايسترو: A → B → D
-├── templates/index.html        # الواجهة
+├── templates/                  # الواجهة، الإعدادات، صفحة الدخول
+├── desktop/                    # PyInstaller spec، مثبّت Inno Setup، الأيقونة، سكربت البناء
+├── .github/workflows/          # بناء EXE والمثبّت وصورة Docker ونشر الإصدار
 ├── static/{css,js}/            # التنسيق ومنطق الواجهة
 ├── skills/0 - arabic-hakam-legal-analysis  # مهارة AHLA لأي وكيل
 ├── examples/                   # عميل API، أسئلة تجريبية، نموذج رد
@@ -201,7 +238,9 @@ python -m pytest -q
 - [ ] استرجاع نصوص الأنظمة (RAG) من مصادر رسمية لتقليل خطر المواد غير المتحقق منها.
 - [ ] بث المراحل للواجهة لحظياً (SSE) بدل الانتظار حتى نهاية المعالجة.
 - [ ] تمرير سياق المحادثة السابقة إلى الوكلاء في الأسئلة المتتابعة.
-- [ ] مصادقة المستخدمين قبل أي نشر عام.
+- [ ] حسابات مستخدمين متعددة (حالياً: رمز دخول ورمز مسؤول).
+- [ ] نسخ macOS وLinux لسطح المكتب.
+- [ ] توقيع رقمي لملفات Windows.
 
 ## ⚠️ إخلاء مسؤولية
 

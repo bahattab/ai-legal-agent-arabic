@@ -8,7 +8,7 @@ def get_connection():
     folder = os.path.dirname(DATABASE_PATH)
     if folder:
         os.makedirs(folder, exist_ok=True)
-    conn = sqlite3.connect(DATABASE_PATH)
+    conn = sqlite3.connect(DATABASE_PATH, timeout=30)
     conn.row_factory = sqlite3.Row
     return conn
 
@@ -82,3 +82,11 @@ def get_conversation_messages(conversation_id):
     rows = cursor.fetchall()
     conn.close()
     return [dict(row) for row in rows]
+
+def delete_conversation(conversation_id):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM messages WHERE conversation_id = ?", (conversation_id,))
+    cursor.execute("DELETE FROM conversations WHERE id = ?", (conversation_id,))
+    conn.commit()
+    conn.close()

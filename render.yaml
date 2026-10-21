@@ -1,0 +1,19 @@
+# نشر بنقرة واحدة على Render: New → Blueprint → اختر هذا المستودع
+services:
+  - type: web
+    name: hakam
+    runtime: docker
+    plan: starter
+    healthCheckPath: /health
+    disk:
+      name: hakam-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: HAKAM_ADMIN_TOKEN
+        generateValue: true
+      # يحمي الموقع كله: بدونه يستطيع أي زائر استهلاك رصيد مزودك وقراءة القضايا
+      - key: HAKAM_ACCESS_TOKEN
+        generateValue: true
+      - key: OPENAI_API_KEY
+        sync: false
