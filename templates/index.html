@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>حَكَم | الذكاء القانوني السيادي</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><span class="seal">⚖</span><div><h1>حَكَم</h1><p>Sovereign Legal Intelligence</p></div></div>
+    <button class="btn-new" id="newCase">+ قضية جديدة</button>
+    <h2 class="archive-title">أرشيف القضايا</h2>
+    <ul class="archive" id="archive"></ul>
+  </aside>
+
+  <main class="court">
+    <header class="topbar">
+      <button class="menu" id="menu" aria-label="القائمة">☰</button>
+      <span>المحكمة الصورية الرقمية</span>
+    </header>
+    <section class="thread" id="thread">
+      <div class="welcome" id="welcome">
+        <h2>اعرض قضيتك</h2>
+        <p>تُشرَّح الوقائع، وتُعرض على ثلاثة مسارات (حرفي، مقاصدي، إجرائي)، ثم تُداوَل قبل صياغة الرأي.</p>
+      </div>
+    </section>
+    <form class="composer" id="composer">
+      <textarea id="question" rows="3" placeholder="اكتب وقائع المسألة وسؤالك القانوني… (حدد الدولة إن أمكن)" required></textarea>
+      <button type="submit" id="send">عرض على المحكمة</button>
+    </form>
+    <p class="footnote">رأي استشاري آلي، لا يغني عن محامٍ مرخص.</p>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify/dist/purify.min.js"></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

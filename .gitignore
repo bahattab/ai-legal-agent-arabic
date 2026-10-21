@@ -1,0 +1,18 @@
+# أسرار وبيئات
+.env
+venv/
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# بيانات المستخدمين — لا تُرفع للمستودع
+data/*.db
+*.db
+*.sqlite3
+
+# أنظمة التشغيل والمحررات
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

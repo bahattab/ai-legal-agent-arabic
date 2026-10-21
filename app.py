@@ -2,6 +2,7 @@ import asyncio
 from flask import Flask, render_template, request, jsonify
 from database import init_db, create_conversation, save_message, get_conversations, get_conversation_messages
 from pipeline import LegalPipeline
+from config import FLASK_DEBUG, PORT
 
 app = Flask(__name__)
 
@@ -13,7 +14,7 @@ def index():
 
 @app.route("/api/chat", methods=["POST"])
 def chat():
-    data = request.json
+    data = request.get_json(silent=True) or {}
     question = data.get("question", "").strip()
     conversation_id = data.get("conversation_id")
     
@@ -55,4 +56,4 @@ def get_conversation(conversation_id):
     return jsonify(messages)
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=FLASK_DEBUG, port=PORT)

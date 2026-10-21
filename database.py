@@ -1,9 +1,13 @@
+import os
 import sqlite3
 import json
 from datetime import datetime
 from config import DATABASE_PATH
 
 def get_connection():
+    folder = os.path.dirname(DATABASE_PATH)
+    if folder:
+        os.makedirs(folder, exist_ok=True)
     conn = sqlite3.connect(DATABASE_PATH)
     conn.row_factory = sqlite3.Row
     return conn
@@ -72,7 +76,7 @@ def get_conversation_messages(conversation_id):
     conn = get_connection()
     cursor = conn.cursor()
     cursor.execute(
-        "SELECT * FROM messages WHERE conversation_id = ? ORDER BY created_at",
+        "SELECT * FROM messages WHERE conversation_id = ? ORDER BY id",
         (conversation_id,)
     )
     rows = cursor.fetchall()
